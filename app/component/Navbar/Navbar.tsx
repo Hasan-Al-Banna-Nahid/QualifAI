@@ -1,5 +1,5 @@
 "use client";
-import ThemeButton from "@/app/ui/button/ThemeButton";
+import ThemeButton from "@/app/ui/Button/ThemeButton";
 import Link from "next/link";
 import { useState } from "react";
 import { IoIosNotificationsOutline } from "react-icons/io";
