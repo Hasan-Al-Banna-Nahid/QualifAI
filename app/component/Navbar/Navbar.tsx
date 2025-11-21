@@ -9,13 +9,22 @@ import Desktop from "./Desktop";
 import Logo from "./Logo";
 import MobileMenuButton from "./MobileMenuButton";
 
-const Navbar = () => {
+interface Route {
+  name: string;
+  href: string;
+  show?: boolean; // Conditional display
+}
+
+interface NavbarProps {
+  routes: Route[];
+}
+const Navbar = ({ routes }: NavbarProps) => {
   const { theme } = useTheme();
 
   return (
     <nav
       className={clsx(
-        "w-full shadow-md transition-colors font-bold",
+        "w-full shadow-md transition-colors font-bold z-50",
         theme === "light"
           ? "bg-white text-gray-900"
           : "bg-slate-900 text-blue-300"
