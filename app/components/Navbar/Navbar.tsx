@@ -9,7 +9,7 @@ import Desktop from "./Desktop";
 import Logo from "./Logo";
 import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Use Next.js hook
+import { usePathname } from "next/navigation";
 
 interface Route {
   name: string;
@@ -25,7 +25,7 @@ interface NavbarProps {
 const Navbar = ({ routes }: NavbarProps) => {
   const { theme } = useTheme();
   const { isAuthenticated, user, isLoading } = useAuth();
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname();
 
   // Filter routes based on authentication
   const filteredRoutes = routes.filter((route) => {
@@ -33,10 +33,9 @@ const Navbar = ({ routes }: NavbarProps) => {
     return route.show !== false;
   });
 
-  // Define auth pages where navbar should be hidden
+  // Define auth pages where navbar should show minimal version
   const authPages = ["/login", "/register", "/auth"];
-  const shouldHideNavbar =
-    !isAuthenticated && authPages.some((page) => pathname.startsWith(page));
+  const isAuthPage = authPages.some((page) => pathname.startsWith(page));
 
   // Show loading state
   if (isLoading) {
@@ -64,11 +63,35 @@ const Navbar = ({ routes }: NavbarProps) => {
     );
   }
 
-  // Don't show navbar for non-authenticated users on auth pages
-  if (shouldHideNavbar) {
-    return null;
+  // Show minimal navbar on auth pages for non-authenticated users
+  if (!isAuthenticated && isAuthPage) {
+    return (
+      <nav
+        className={clsx(
+          "w-full fixed shadow-md transition-colors font-bold z-50",
+          theme === "light"
+            ? "bg-white/80 backdrop-blur-sm text-gray-900"
+            : "bg-slate-900/80 backdrop-blur-sm text-blue-300"
+        )}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            {/* Left - Logo */}
+            <Link href="/">
+              <Logo />
+            </Link>
+
+            {/* Right - Only theme button on auth pages */}
+            <div className="flex items-center space-x-4">
+              <ThemeButton />
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
   }
 
+  // Full navbar for authenticated users or non-auth pages
   return (
     <nav
       className={clsx(
