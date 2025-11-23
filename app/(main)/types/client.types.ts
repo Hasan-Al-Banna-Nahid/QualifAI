@@ -1,130 +1,172 @@
 // types/client.types.ts
 export interface Client {
   id: string;
-  // Basic Information
   name: string;
   email: string;
-  phone: string;
   company: string;
-  website: string;
-
-  // Status & Service
-  status: "active" | "inactive" | "pending" | "on-hold";
-  serviceType:
-    | "wordpress"
-    | "shopify"
-    | "mern"
-    | "java"
-    | "python"
-    | "react"
-    | "nextjs"
-    | "nodejs"
-    | "mobile"
-    | "ecommerce";
-  serviceTier: "basic" | "standard" | "premium" | "enterprise";
-
-  // Visual & Branding
+  status: "active" | "inactive" | "pending";
+  serviceType: ServiceType;
   logo?: string;
-  brandColor: string;
-  industry: string;
-
-  // Project Details
-  projectDescription: string;
-  projectGoals: string[];
-  technologies: string[];
-
-  // QA & Monitoring
-  lastQACheck: Date;
-  qaStatus: "passed" | "failed" | "pending" | "in-progress";
-  qaScore: number; // 1-10
-  performanceScore: number; // 1-100
-
-  // AI Analysis
-  aiAnalysis?: {
-    sentiment: "positive" | "negative" | "neutral";
-    priority: "low" | "medium" | "high" | "critical";
-    recommendations: string[];
-    riskAssessment: string;
-    predictedGrowth: number; // percentage
-    lastAnalyzed: Date;
-  };
-
-  // Financial
-  monthlyRetainer: number;
-  paymentStatus: "paid" | "pending" | "overdue" | "cancelled";
-  contractStartDate: Date;
-  contractEndDate: Date;
-
-  // Technical
-  hosting: "shared" | "vps" | "dedicated" | "cloud";
-  sslStatus: "active" | "expired" | "pending";
-  backupFrequency: "daily" | "weekly" | "monthly";
-
-  // Timestamps
+  color: string;
+  services: ClientService[];
+  subscriptionTier: "basic" | "professional" | "enterprise";
+  billingCycle: "monthly" | "quarterly" | "annual";
+  totalQARuns: number;
+  averageQAScore: number;
+  criticalIssues: number;
+  openIssues: number;
+  aiAnalysis?: AIClientAnalysis;
+  reasoning?: string;
+  confidence?: number;
   createdAt: Date;
   updatedAt: Date;
   lastContact: Date;
+  detailedServices?: ClientService[];
+}
+
+export interface ClientService {
+  id: string;
+  type: ServiceType;
+  name: string;
+  status: "active" | "inactive" | "pending";
+  credentials?: ServiceCredentials;
+  configuration?: ServiceConfiguration;
+  lastQARun?: Date;
+  qaScore?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type ServiceType =
+  | "wordpress"
+  | "ppc"
+  | "seo"
+  | "ai-automation"
+  | "content"
+  | "social-media";
+
+export interface ServiceCredentials {
+  // Common credentials
+  url?: string;
+  apiKey?: string;
+  username?: string;
+  password?: string;
+  accessToken?: string;
+
+  // WordPress specific
+  wpAdminUrl?: string;
+  databaseHost?: string;
+  environment?: "production" | "staging" | "development";
+
+  // PPC specific
+  adAccountId?: string;
+  campaignIds?: string[];
+  platform?: "google-ads" | "facebook-ads" | "linkedin-ads";
+
+  // SEO specific
+  searchConsoleUrl?: string;
+  analyticsViewId?: string;
+  targetKeywords?: string[];
+
+  // AI Automation (n8n) specific
+  n8nWebhookUrl?: string;
+  workflowIds?: string[];
+  apiCredentials?: Record<string, any>;
+
+  // Content specific
+  cmsType?: "wordpress" | "contentful" | "custom";
+  contentRepository?: string;
+
+  // Social Media specific
+  socialPlatforms?: ("facebook" | "twitter" | "linkedin" | "instagram")[];
+  pageIds?: string[];
+}
+
+export interface ServiceConfiguration {
+  // WordPress configuration
+  wordpress?: {
+    theme: string;
+    plugins: string[];
+    performance: {
+      caching: boolean;
+      cdn: boolean;
+      imageOptimization: boolean;
+    };
+    security: {
+      ssl: boolean;
+      firewall: boolean;
+      backups: boolean;
+    };
+  };
+
+  // PPC configuration
+  ppc?: {
+    dailyBudget: number;
+    targetAudience: string[];
+    adFormats: string[];
+    conversionTracking: boolean;
+  };
+
+  // SEO configuration
+  seo?: {
+    targetKeywords: string[];
+    competitorUrls: string[];
+    localSeo: boolean;
+    technicalSeo: boolean;
+  };
+
+  // AI Automation (n8n) configuration
+  aiAutomation?: {
+    workflowTesting: boolean;
+    dataValidation: boolean;
+    errorHandling: boolean;
+    performanceMonitoring: boolean;
+  };
+
+  // Content configuration
+  content?: {
+    contentType: "blog" | "product" | "landing-page";
+    tone: "professional" | "casual" | "technical";
+    seoOptimization: boolean;
+    grammarCheck: boolean;
+  };
+
+  // Social Media configuration
+  socialMedia?: {
+    platforms: {
+      facebook?: { pageId: string; autoPost: boolean };
+      twitter?: { handle: string; autoTweet: boolean };
+      linkedin?: { companyId: string; autoPost: boolean };
+      instagram?: { accountId: string; autoPost: boolean };
+    };
+    scheduling: boolean;
+    analytics: boolean;
+  };
 }
 
 export interface ClientFormData {
-  // Basic Information
   name: string;
   email: string;
-  phone: string;
   company: string;
-  website: string;
-
-  // Status & Service
-  status: "active" | "inactive" | "pending" | "on-hold";
-  serviceType:
-    | "wordpress"
-    | "shopify"
-    | "mern"
-    | "java"
-    | "python"
-    | "react"
-    | "nextjs"
-    | "nodejs"
-    | "mobile"
-    | "ecommerce";
-  serviceTier: "basic" | "standard" | "premium" | "enterprise";
-
-  // Visual & Branding
+  status: "active" | "inactive" | "pending";
+  serviceType: ServiceType;
   logo?: string;
-  brandColor: string;
-  industry: string;
-
-  // Project Details
-  projectDescription: string;
-  projectGoals: string[];
-  technologies: string[];
-
-  // Financial
-  monthlyRetainer: number;
-  paymentStatus: "paid" | "pending" | "overdue" | "cancelled";
-  contractStartDate: string;
-  contractEndDate: string;
-
-  // Technical
-  hosting: "shared" | "vps" | "dedicated" | "cloud";
-  sslStatus: "active" | "expired" | "pending";
-  backupFrequency: "daily" | "weekly" | "monthly";
+  color: string;
 }
 
 export interface ClientsFilter {
   search: string;
   status: string;
   serviceType: string;
-  serviceTier: string;
-  paymentStatus: string;
   page: number;
   limit: number;
 }
 
 export interface AIClientAnalysis {
-  sentiment: "positive" | "negative" | "neutral";
-  priority: "low" | "medium" | "high" | "critical";
+  priority: "high" | "medium" | "low";
+  sentiment: "positive" | "neutral" | "negative";
+  riskScore: number;
+  opportunities: string[];
   recommendations: string[];
-  riskAssessment: string;
-  predictedGrowth: number;
+  lastAnalyzed: Date;
 }

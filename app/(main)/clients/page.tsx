@@ -66,9 +66,25 @@ export default function ClientsPage() {
   // O(1) filtered clients using React Query cache
   const filteredClients = useMemo(() => clients, [clients]);
 
-  const handleCreateClient = async (data: ClientFormData) => {
-    await createClient(data);
-    setShowForm(false);
+  // In your client creation component/page
+  const handleCreateClient = async (
+    data: ClientFormSchema & { initialServices: ServiceType[] }
+  ) => {
+    try {
+      const result = await clientService.createClient(data);
+
+      // If there's a service to configure after creation
+      if (result.id && selectedServiceForConfig) {
+        // Redirect to the service configuration page
+        router.push(
+          `/qualifai/${selectedServiceForConfig}?clientId=${result.id}&mode=configure`
+        );
+      } else {
+        onClose(); // Just close the form
+      }
+    } catch (error) {
+      console.error("Failed to create client:", error);
+    }
   };
 
   const handleUpdateClient = async (data: ClientFormData) => {

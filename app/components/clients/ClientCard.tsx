@@ -6,8 +6,16 @@ import { Client } from "@/app/(main)/types/client.types";
 import { StatusBadge } from "./StatusBadge";
 import { ServiceBadge } from "./ServiceBadge";
 import { cn } from "@/lib/utils";
-import { FiCalendar, FiMail } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiMail,
+  FiBarChart2,
+  FiAlertTriangle,
+  FiPlay,
+  FiSettings,
+} from "react-icons/fi";
 import { LuBuilding2 } from "react-icons/lu";
+import { useRouter } from "next/navigation";
 
 interface ClientCardProps {
   client: Client;
@@ -22,6 +30,17 @@ export const ClientCard: React.FC<ClientCardProps> = ({
   onDelete,
   className,
 }) => {
+  const router = useRouter();
+
+  const handleServiceClick = (serviceType: string) => {
+    router.push(`/qualifai/${serviceType}?clientId=${client.id}`);
+  };
+
+  const handleQuickQA = () => {
+    // Start quick QA for all active services
+    router.push(`/qualifai/quick-qa?clientId=${client.id}`);
+  };
+
   return (
     <motion.div
       layout
@@ -35,6 +54,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
         className
       )}
     >
+      {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           {client.logo ? (
@@ -64,7 +84,8 @@ export const ClientCard: React.FC<ClientCardProps> = ({
         <StatusBadge status={client.status} />
       </div>
 
-      <div className="space-y-3">
+      {/* Contact Info */}
+      <div className="space-y-2 mb-4">
         <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
           <FiMail className="w-4 h-4 mr-2" />
           {client.email}
@@ -72,34 +93,114 @@ export const ClientCard: React.FC<ClientCardProps> = ({
 
         <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
           <FiCalendar className="w-4 h-4 mr-2" />
-          Last QA: {new Date(client.lastQACheck).toLocaleDateString()}
+          Created: {new Date(client.createdAt).toLocaleDateString()}
         </div>
+      </div>
 
+      {/* Service Type */}
+      <div className="mb-4">
         <ServiceBadge service={client.serviceType} />
       </div>
 
-      <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          Created: {new Date(client.createdAt).toLocaleDateString()}
-        </span>
+      {/* QualifAI Services */}
+      {client.services && client.services.length > 0 && (
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Active QA Services
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {client.services.slice(0, 3).map((service) => (
+              <motion.button
+                key={service.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleServiceClick(service.type)}
+                className={cn(
+                  "px-2 py-1 rounded-lg text-xs font-medium capitalize transition-colors",
+                  service.status === "active"
+                    ? "bg-green-500/20 text-green-700 dark:text-green-400 hover:bg-green-500/30"
+                    : service.status === "needs-qa"
+                    ? "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/30"
+                    : "bg-gray-500/20 text-gray-700 dark:text-gray-400 hover:bg-gray-500/30"
+                )}
+              >
+                {service.type.replace("-", " ")}
+              </motion.button>
+            ))}
+            {client.services.length > 3 && (
+              <span className="px-2 py-1 bg-gray-500/20 text-gray-700 dark:text-gray-400 rounded-lg text-xs">
+                +{client.services.length - 3} more
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* QA Metrics */}
+      <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-1 text-sm text-gray-600 dark:text-gray-400">
+            <FiBarChart2 className="w-3 h-3" />
+            <span>QA Score</span>
+          </div>
+          <div
+            className={cn(
+              "text-lg font-bold",
+              client.averageQAScore >= 80
+                ? "text-green-600 dark:text-green-400"
+                : client.averageQAScore >= 60
+                ? "text-yellow-600 dark:text-yellow-400"
+                : "text-red-600 dark:text-red-400"
+            )}
+          >
+            {client.averageQAScore || 0}%
+          </div>
+        </div>
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-1 text-sm text-gray-600 dark:text-gray-400">
+            <FiAlertTriangle className="w-3 h-3" />
+            <span>Issues</span>
+          </div>
+          <div
+            className={cn(
+              "text-lg font-bold",
+              client.criticalIssues > 0
+                ? "text-red-600 dark:text-red-400"
+                : "text-green-600 dark:text-green-400"
+            )}
+          >
+            {client.criticalIssues || 0}
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between items-center pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
         <div className="flex space-x-2">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onEdit(client)}
-            className="px-3 py-1 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            onClick={handleQuickQA}
+            className="px-3 py-1 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-1"
           >
-            Edit
+            <FiPlay className="w-3 h-3" />
+            <span>Quick QA</span>
           </motion.button>
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onDelete(client)}
-            className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            onClick={() => onEdit(client)}
+            className="px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-1"
           >
-            Delete
+            <FiSettings className="w-3 h-3" />
+            <span>Manage</span>
           </motion.button>
         </div>
+
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {client.totalQARuns || 0} QA runs
+        </span>
       </div>
     </motion.div>
   );

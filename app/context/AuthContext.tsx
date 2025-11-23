@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       !authActionLoading &&
       hasJustLoggedIn
     ) {
-      const redirectPath = intendedRoute || "/dashboard"; // Redirect to dashboard instead of home
+      const redirectPath = intendedRoute || "/qualifai"; // Redirect to dashboard instead of home
       clearIntendedRoute();
       setHasJustLoggedIn(false);
 
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // FIXED: Only redirect after Google sign in
   useEffect(() => {
     if (googleSignInMutation.isSuccess && user && !authActionLoading) {
-      const redirectPath = intendedRoute || "/dashboard"; // Redirect to dashboard instead of home
+      const redirectPath = intendedRoute || "/qualifai"; // Redirect to dashboard instead of home
       clearIntendedRoute();
 
       setTimeout(() => {
