@@ -8,7 +8,7 @@ import {
   useLogout,
   useRegister,
   useGoogleSignIn,
-} from "@/app/(main)/lib/hooks/useAuth";
+} from "@/app/(main)/hooks/useAuth";
 import { User } from "@/app/(main)/lib/services/firebase-auth-services";
 import {
   LoginFormData,
